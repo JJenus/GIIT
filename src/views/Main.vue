@@ -5,12 +5,12 @@ import Candidate from "../component/Candidate.vue";
 import axios from "axios";
 
 const env = import.meta.env;
-console.log(env);
+
 const store = globePoints();
 const candidates = ref([]);
 
-console.log(store.points);
-let shortList = ref(50)
+let shortList = ref(50);
+let searchInput = ref('')
 
 const skill = ref(null);
 
@@ -71,11 +71,23 @@ function saveCandidate() {
     .request(config)
     .then((res) => {
       candidates.value.push(res.data);
-      
+      document.getElementById("close-btn").click();
     })
     .catch((err) => {
       console.log(err);
     });
+}
+
+function search() {
+  const rjx = new RegExp(searchInput.value, 'i')
+  document.querySelectorAll(".candidates").forEach((e) => {
+    if(rjx.test(e.innerText)){
+      e.style.display = "block";
+    }
+    else{
+      e.style.display = "none";
+    }
+  });
 }
 
 function init() {
@@ -213,6 +225,8 @@ let show = ref(false);
               ><i class="fas fa-search" aria-hidden="true"></i
             ></span>
             <input
+              @keyup="search()"
+              v-model="searchInput"
               type="text"
               class="form-control"
               placeholder="Type here..."
@@ -282,7 +296,9 @@ let show = ref(false);
                         >
                           Available
                         </p>
-                        <h5 class="font-weight-bolder mb-0">{{candidates.length}}</h5>
+                        <h5 class="font-weight-bolder mb-0">
+                          {{ candidates.length }}
+                        </h5>
                       </div>
                     </div>
                     <div class="col-4 text-end">
@@ -348,6 +364,42 @@ let show = ref(false);
         </div>
       </footer>
     </div>
+    <button
+      id="close-btn"
+      type="button"
+      class="btn d-none bg-gradient-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#alert-success"
+    >
+      Launch demo modal
+    </button>
+    <div
+      class="modal shpw fade"
+      id="alert-success"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="alert-success"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <button
+              type="button"
+              class="btn-close ms-auto position-absolute text-dark"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+
+            <div class="margin-auto fs-3 text-center">
+              <i class="fas fa-check-circle text-success me-2"></i> Saved
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <div :class="show ? 'show' : ''" class="fixed-plugin">
@@ -392,14 +444,12 @@ let show = ref(false);
             />
           </div>
           <div class="form-group mb-1">
-            <label for="example-search-input" class="form-control-label"
-              >Job Title</label
-            >
+            <label for="jt" class="form-control-label">Job Title</label>
             <input
               v-model="form.jobTitle"
               class="form-control"
               type="text"
-              id="example-search-input"
+              id="jt"
               placeholder="Web developer"
               required
             />

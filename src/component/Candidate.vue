@@ -8,7 +8,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="col-md-4 mt-4">
+  <div class="col-md-4 mt-4 candidates">
     <div class="card">
       <img height="200" class="card-img-top" :src="candidate.imgUrl" />
       <div
