@@ -350,7 +350,7 @@ let show = ref(false);
               <div
                 class="copyright text-center text-sm text-muted text-lg-start"
               >
-                © 2022, credits:
+                © 2022, credit:
                 <a
                   href="https://www.creative-tim.com/"
                   class="font-weight-bold"
