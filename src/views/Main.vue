@@ -8,9 +8,10 @@ const env = import.meta.env;
 
 const store = globePoints();
 const candidates = ref([]);
+let submitting = ref(false)
 
 let shortList = ref(50);
-let searchInput = ref('')
+let searchInput = ref("");
 
 const skill = ref(null);
 
@@ -58,6 +59,7 @@ function removeSkill(index) {
 }
 
 function saveCandidate() {
+  submitting.value = true
   const config = {
     method: "POST",
     url: env.VITE_BE_API + "/candidates",
@@ -75,16 +77,18 @@ function saveCandidate() {
     })
     .catch((err) => {
       console.log(err);
+      alert("error occured")
+    }).finally(()=>{
+      submitting.value = false
     });
 }
 
 function search() {
-  const rjx = new RegExp(searchInput.value, 'i')
+  const rjx = new RegExp(searchInput.value, "i");
   document.querySelectorAll(".candidates").forEach((e) => {
-    if(rjx.test(e.innerText)){
+    if (rjx.test(e.innerText)) {
       e.style.display = "block";
-    }
-    else{
+    } else {
       e.style.display = "none";
     }
   });
@@ -321,7 +325,19 @@ let show = ref(false);
 
       <!-- Competitors -->
 
-      <div class="row">
+      <div :class="candidates.length < 1? 'justify-content-center align-items-center':''" class="row mb-5 z-index-2">
+        <div v-if="candidates.length < 1" class="col z-index-2 pt-5">
+          <div class="d-flex text-center flex-column align-items-center " type="button" disabled>
+            <div>
+              <span
+              class="spinner-border fs-3 spinner-border-lg"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            </div>
+            loading candidates...
+          </div>
+        </div>
         <Candidate
           v-for="candidate in candidates"
           :candidate="candidate"
@@ -531,7 +547,15 @@ let show = ref(false);
           <hr class="horizontal dark mb-1 d-xl-block d-none" />
 
           <hr class="horizontal dark my-sm-4" />
-          <button type="submit" class="btn btn-dark w-100">Submit</button>
+          <button :class="submitting? 'disabled':''" type="submit" class="btn btn-dark w-100">
+            <span
+              v-if="submitting"
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            <span v-else>Save</span>
+          </button>
         </form>
       </div>
     </div>
